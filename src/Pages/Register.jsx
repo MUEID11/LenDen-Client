@@ -1,6 +1,11 @@
 import { useState } from "react";
 import backgroundLogo from "./../../public/logo1.png";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const RegistrationForm = () => {
+  const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
   const [pin, setPin] = useState("");
   const [role, setRole] = useState('user')
   const handleInputChange = (e) => {
@@ -24,7 +29,21 @@ const RegistrationForm = () => {
       pin,
       role,
     }
-    console.log(user);
+    try{
+      const response = await axiosPublic.post('/register', user);
+      const data = response.data;
+      if(data.error){
+        toast.error('Registration failed')
+        console.log(data.error)
+      }else{
+        toast.success('Registration successfull')
+        console.log(`Registration Successfull`, data);
+        navigate('/login');
+
+      }
+    }catch(error){
+      console.error('Error registering user:', error);
+    }
   };
   return (
     <div
@@ -135,8 +154,8 @@ const RegistrationForm = () => {
             </div>
           </form>
           <div className="mt-2 ">
-              {role === "agent" && <button  >Agent Registration, <span className="text-green-500 font-semibold" onClick={()=>setRole('user')}>Register as User</span></button>}
-              {role === "user" && <button >User Registration, <span className="text-blue-500 font-semibold" onClick={()=>setRole('agent')}>Register as Agent</span></button>}
+              {role === "agent" && <button  >Agent Registration, <span className="text-green-500 font-semibold underline" onClick={()=>setRole('user')}>Register as User</span></button>}
+              {role === "user" && <button >User Registration, <span className="text-blue-500 font-semibold underline" onClick={()=>setRole('agent')}>Register as Agent</span></button>}
             </div>
         </div>
       </div>

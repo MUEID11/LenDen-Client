@@ -8,14 +8,31 @@ import {
   FaPlus,
   FaSignOutAlt,
 } from "react-icons/fa";
-import logo from "./../public/logo1.png"
+
+import logo from "./../public/logo1.png";
+import { useContext } from "react";
+import { AuthContext } from "./Provider/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import useProtection from "./Hooks/useProtection";
+import BalanceButton from "./Components/BlanceButton";
 function App() {
+  const navigate = useNavigate();
+  const { logOut } = useContext(AuthContext);
+  const { data, isLoading, isError, refetch } = useProtection();
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    logOut();
+    return navigate("/login");
+  };
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="bg-[#1E90FF] text-gray-100 w-64 flex-none flex flex-col justify-between p-4">
+      <aside className="bg-[#1E90FF] text-gray-100 w-64 hidden sm:flex-none sm:flex flex-col justify-between p-4 ">
         <div>
-          <div className="text-2xl font-bold mb-6 flex items-center"><img className="h-8 mr-2"  src={logo} alt="logo"/> Len Den</div>
+          <div className="sm:text-2xl font-bold mb-6 flex items-center">
+            <img className="h-4 sm:h-8 mr-2" src={logo} alt="logo" /> Len Den
+          </div>
           <nav className="space-y-4">
             <a
               href="#"
@@ -59,22 +76,21 @@ function App() {
             <FaPlus />
             <span>Become An Agent</span>
           </button>
-          <button className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-gray-600 p-2 rounded">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-gray-600 p-2 rounded"
+          >
             <FaSignOutAlt />
             <span>Sign Out</span>
           </button>
         </div>
-      </div>
+      </aside>
 
       {/* Main content */}
       <div className="flex-grow bg-blue-100 text-gray-100">
         <header className="flex items-center justify-between mb-6 bg-[#1e9aff] p-4 shadow-xl">
-          <h1 className="text-3xl font-bold ">My feed</h1>
-          <input
-            type="button"
-            value="Balance"
-            className="bg-white text-blue-600 p-2 rounded-md"
-          />
+          <h1 className="sm:text-xl font-medium sm:font-bold ">{`${data.name} (${data.role})`}</h1>
+          <BalanceButton />
         </header>
 
         <div className="grid grid-cols-3 gap-4 text-gray-800">
